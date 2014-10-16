@@ -1,6 +1,6 @@
-终止asp.net会话
+﻿终止asp.net会话
 ===
-```csharp
+```c#
 Session.Abandon();
 HttpCookie cookie = Response.Cookies.Get("ASP.NET_SessionId");
 if (cookie != null)
