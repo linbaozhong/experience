@@ -7,65 +7,90 @@
 
 (function($) {
 	$.fn.accordion = function(options) {
-		var defaults = {
+		var $this = $(this),
+			defaults = {
 				size: {
 					heading: 30,
-					content: 500
+					body: 600
 				}, //单体宽度或者高度,'auto'可选
-				horizontal: false, //横向或纵向排列
+				horizontal: true, //横向或纵向排列
 				clickonly: true, //只允许click触发
 				autoopen: 1, //自动打开
 				speed: 300 //动画速度
 			},
 			opts = $.extend(defaults, options),
-			contentStyle = function(p){
+
+			bodyStyle = function(p) {
 				return opts.horizontal ? {
-					'width': opts.size.content,
+					'width': opts.size.body - opts.size.heading,
 					'height': p.height()
 				} : {
-					'height': opts.size.content
+					//'height': opts.size.body - opts.size.heading,
+					'width':$this.width()
 				}
 			},
-			headingStyle = function(p){
+			headingStyle = function(p) {
 				return opts.horizontal ? {
 					'textAlign': opts.size.heading + 'px',
 					'width': opts.size.heading,
 					'height': p.height()
 				} : {
 					'lineHeight': opts.size.heading + 'px',
-					'height': opts.size.heading
+					'height': opts.size.heading,
+					'width':$this.width()
 				}
 			};
 
 		/*
 		 * 新抽屉
 		 */
-		this.add = function(title, html) {
-			return this.each(function() {
+		$this.add = function(title, html) {
+			return this.each(function(index) {
 				var self = $(this),
 					frame = $('<div />').addClass('frame'),
 					heading = $('<div />').addClass('heading').css('lineHeight', opts.size.heading + 'px').html(title).css(headingStyle(self)),
-					content = $('<div />').addClass('content').html(html).css(contentStyle(self));
+					content = $('<div />').addClass('content').html(html).css(bodyStyle(self));
 
 				frame.append(heading).append(content);
 				frame.appendTo(self);
+				//展开
+				//if (index === opts.autoopen) {
+				$this.open(frame);
+				//}
 			});
 		};
+		/*
+		 * 展开
+		 */
+		$this.open = function(_obj) {
+			var _frame = _obj.parent().children(),
+				_left = 0,
+				_top = 0,
+				_width = ($this.width() - (_frame.filter('.opening').length * opts.size.body)) / (_frame.length - _frame.filter('.opening').length),
+				_height = $this.height()- ((_frame.length- _frame.filter('.opening').length) * opts.size.heading);
 
-		return this.each(function() {
-			var self = $(this);
+			_frame.each(function(index) {
+				var __this = $(this);
 
-			/*
-			 * 切换
-			 */
-			var _sliding = function(_obj) {
-				if (_obj.hasClass('showing')) {
-					return _obj;
+				if (opts.horizontal) {
+					__this.stop().animate({
+						'left': _left
+					});
+
+					_left += __this.hasClass('opening') ? __this.width() : _width;
+				} else {
+					__this.stop().animate({
+						'top': _top,
+						'height':_height
+					});
+					_top += __this.hasClass('opening') ? _height : opts.size.heading;
 				}
-				_obj.find('.content').stop(true).show(opts.speed);
-				self.find('.frame.showing').removeClass('showing').find('.content').stop(true).hide(opts.speed);
-				return _obj.addClass('showing');
-			};
+
+			});
+		}
+
+		return $this.each(function() {
+			var self = $(this);
 
 			/*
 			 * 复原
@@ -75,10 +100,9 @@
 						self.find('.frame.active').removeClass('active');
 						_obj.addClass('active');
 					} else {
-						_obj = self.find('.frame.active');
-						_sliding(_obj);
+						_obj = self.find('.frame.active').addClass('opening');
+						$this.open(_obj);
 					}
-					return _obj;
 				}
 				/*
 				 * 初始化
@@ -91,11 +115,12 @@
 					self.addClass('horizontal');
 				}
 
-				self.find('.frame').find('.content').css(contentStyle(self));
-				self.find('.frame').find('.heading').css(headingStyle(self));
+				var _frame = self.find('.frame');
+				_frame.find('.content').css(bodyStyle(self));
+				_frame.find('.heading').css(headingStyle(self));
 
 				//自动打开
-				_sliding(self.find('.frame:nth-child(' + opts.autoopen + ')').addClass('active'));
+				$this.open(_frame.filter(':nth-child(' + opts.autoopen + ')').addClass('opening').addClass('active'));
 				//事件
 				self.on('click', '.frame', function(e) {
 					//
@@ -106,8 +131,11 @@
 
 					_revert(_obj);
 				}).on('mouseenter', '.frame', function(e) {
-					_sliding($(this));
+					self.find('.frame.opening').removeClass('opening');
+					$(this).addClass('opening');
+					$this.open($(this));
 				}).on('mouseleave', function(e) {
+					self.find('.frame.opening').removeClass('opening');
 					_revert();
 				});
 			})();

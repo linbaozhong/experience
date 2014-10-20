@@ -1,69 +1,76 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>手风琴插件-抽屉</title>
-    <style type="text/css">
-        .accordion {
-            position:relative;
-            overflow:visible;
-        }
 
-            .accordion.horizontal::after {
-                clear:both;
-                content:" ";
-            }
-            .accordion.horizontal .frame {
-                display:inline;
-                float:left;
-            }
-             .accordion.horizontal .frame .heading {
-                float:left;
-                text-align:center;
-                overflow:hidden;
-            }
-             .accordion.horizontal .frame .content {
-                float:left;
-            }
-             .accordion.horizontal .frame .content::after {
-                /*clear:both;
-                content:" ";*/
-            }
-            .accordion .frame {
-                border: solid 1px #ddd;
-                cursor:pointer;
-            }
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>手风琴插件-抽屉</title>
+		<style type="text/css">
+			.accordion {
+				position: relative;
+				overflow: hidden;
+				border: solid 1px #ddd;
+			}
+			.accordion.horizontal::after {
+				clear: both;
+				content: " ";
+			}
+			.accordion.horizontal .frame .heading {
+				float: left;
+				text-align: center;
+				overflow: hidden;
+			}
+			.accordion.horizontal .frame .content {
+				/*float:left;*/
+			}
+			.accordion.horizontal .frame .content::after {
+				clear: both;
+				content: " ";
+			}
+			.accordion .frame {
+				background: #fff;
+				position: absolute;
+				left: 0;
+				top: 0;
+				cursor: pointer;
+			}
+			.accordion .frame .heading {
+				background: #eee;
+			}
+			.accordion .frame .content {
+				/*display: none;*/
+			}
+			.accordion .frame.active .content {}
+		</style>
+		<script src="../jQuery/jquery-2.1.1.min.js"></script>
+		<script src="jquery.accordion.0.1.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				var chouti = $('.chouti').accordion({
+					horizontal: true
+				}).add('second', '第二<br />第二<br />第二<br />');
+			});
+		</script>
+	</head>
 
-                .accordion .frame .heading {
-                    background:#eee;
-                }
+	<body>
+		<div class="chouti" style="height:300px;">
+			<div class="frame">
+				<div class="heading" style="">标题 1</div>
+				<div class="content" style="">tyutyuytu</div>
+			</div>
+			<div class="frame">
+				<div class="heading" style="">标题 2</div>
+				<div class="content" style="">第二
+					<br>第二
+					<br>第二
+					<br>
+				</div>
+			</div>
+		</div>
+		<br />
+		<!--<div class="chouti" style="height:200px;">
 
-                .accordion .frame .content {
-                    display: none;
-                }
+		</div>-->
+	</body>
 
-                .accordion .frame.active .content {
-                    
-                }
-    </style>
-    <script src="../jQuery/jquery-2.1.1.min.js"></script>
-    <script src="jquery.accordion.0.1.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            var chouti = $('.chouti').accordion({
-                horizontal: true
-            }).add('second', '第二<br />第二<br />第二<br />');
-        });
-    </script>
-</head>
-<body>
-    <div class="chouti" style="height:300px;">
-        <div class="frame"><div class="heading" style="">标题 1</div><div class="content" style="">tyutyuytu</div></div>
-        <div class="frame"><div class="heading" style="">标题 2</div><div class="content" style="">第二<br>第二<br>第二<br></div></div>
-    </div>
-    <br />
-    <div class="chouti"style="height:200px;">
-    	
-    </div>
-</body>
 </html>
