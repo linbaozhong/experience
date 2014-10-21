@@ -6,38 +6,28 @@
 		<title>手风琴插件-抽屉</title>
 		<style type="text/css">
 			.accordion {
-				position: relative;
-				overflow: hidden;
-				border: solid 1px #ddd;
+
 			}
 			.accordion.horizontal::after {
 				clear: both;
 				content: " ";
 			}
 			.accordion.horizontal .frame .heading {
-				float: left;
-				text-align: center;
-				overflow: hidden;
 			}
 			.accordion.horizontal .frame .content {
-				/*float:left;*/
 			}
 			.accordion.horizontal .frame .content::after {
-				clear: both;
-				content: " ";
+
 			}
 			.accordion .frame {
+				border: 1px solid #EEEEEE;
 				background: #fff;
-				position: absolute;
-				left: 0;
-				top: 0;
-				cursor: pointer;
 			}
 			.accordion .frame .heading {
 				background: #eee;
 			}
 			.accordion .frame .content {
-				/*display: none;*/
+				padding:5px;
 			}
 			.accordion .frame.active .content {}
 		</style>
@@ -47,13 +37,13 @@
 			$(function() {
 				var chouti = $('.chouti').accordion({
 					horizontal: true
-				}).add('second', '第二<br />第二<br />第二<br />');
+				}).add({title:'', html:'第二<br />第二<br />第二<br />'}).add({url:'it.htm',active:true});
 			});
 		</script>
 	</head>
 
 	<body>
-		<div class="chouti" style="height:300px;">
+		<div class="chouti" style="height:200px;">
 			<div class="frame">
 				<div class="heading" style="">标题 1</div>
 				<div class="content" style="">tyutyuytu</div>
@@ -68,9 +58,9 @@
 			</div>
 		</div>
 		<br />
-		<!--<div class="chouti" style="height:200px;">
+		<div class="chouti" style="height:200px;">
 
-		</div>-->
+		</div>
 	</body>
 
 </html>
