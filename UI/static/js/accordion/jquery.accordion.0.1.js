@@ -26,46 +26,77 @@
 				'cursor': 'pointer',
 				'overflow': 'hidden'
 			},
-			getSize = function(_obj) {
-				var hasHeading = _obj.hasClass('heading') || _obj.siblings('.heading').length > 0;
-
+			getBorder = function(_obj) {
 				return {
-					'box': _obj.parents('.accordion'),
-					'heading': hasHeading ? opts.size.heading : 0,
 					'width': parseInt(_obj.css('paddingLeft')) + parseInt(_obj.css('paddingRight')) + parseInt(_obj.css('marginLeft')) + parseInt(_obj.css('marginRight')) + parseInt(_obj.css('borderLeftWidth')) + parseInt(_obj.css('borderRightWidth')),
 					'height': parseInt(_obj.css('paddingTop')) + parseInt(_obj.css('paddingBottom')) + parseInt(_obj.css('marginTop')) + parseInt(_obj.css('marginBottom')) + parseInt(_obj.css('borderTopWidth')) + parseInt(_obj.css('borderBottomWidth'))
 				};
 			},
-			contentStyle = function(_obj) {
-				var p = getSize(_obj);
-				return opts.horizontal ? {
-					'width': opts.size.body - p.heading - p.width,
-					'height': p.box.height() - p.height,
-					'marginLeft': p.heading,
-					'overflowX': 'hidden',
-					'overflowY': 'auto'
-				} : {
-					'width': p.box.width() - p.width,
-					'height': p.box.height() - p.height - opts.size.heading,
-					'overflowX': 'hidden',
-					'overflowY': 'auto'
-				}
-			},
-			headingStyle = function(_obj) {
-				var p = getSize(_obj);
-
-				return opts.horizontal ? {
-					'textAlign': 'center',
-					'width': p.heading - p.width,
-					'height': p.box.height() - p.height,
-					'overflow': 'hidden',
-					'float': 'left'
-				} : {
-					'lineHeight': p.heading + 'px',
-					'height': p.heading - p.height,
-					'width': p.box.width() - p.width,
-					'overflow': 'hidden'
-				}
+			refresh = function() {
+				//重绘
+				$this.each(function() {
+					var self = $(this),
+						_frame = self.find('.frame'),
+						_border = getBorder(_frame);
+					// 渲染frame
+					if (opts.horizontal) {
+						// 横向
+						_frame.css({
+							'height': self.height() - _border.height,
+							'width': opts.size.body - _border.width
+						});
+					} else {
+						// 纵向
+						_frame.css({
+							'height': (self.height() - ((_frame.length - _frame.filter('.opening').length) * opts.size.heading)) / _frame.filter('.opening').length - _border.height,
+							'width': self.width() - _border.width
+						});
+					}
+					// 渲染 heading
+					_frame.find('.heading').each(function() {
+						var heading = $(this),
+							headingBorder = getBorder(heading);
+						// 横向
+						if (opts.horizontal) {
+							heading.css({
+								'textAlign': 'center',
+								'overflow': 'hidden',
+								'float': 'left',
+								'width': opts.size.heading - headingBorder.width,
+								'height': _frame.height() - headingBorder.height
+							});
+						} else {
+							heading.css({
+								'overflow': 'hidden',
+								'lineHeight': (opts.size.heading - headingBorder.height) + 'px',
+								'height': opts.size.heading - headingBorder.height,
+								'width': _frame.width() - headingBorder.width
+							});
+						}
+					});
+					// 渲染 content
+					_frame.find('.content').each(function() {
+						var content = $(this),
+							contentBorder = getBorder(content);
+						// 横向
+						if (opts.horizontal) {
+							content.css({
+								'width': _frame.width() - contentBorder.width,
+								'height': _frame.height() - contentBorder.height,
+								'marginLeft': (content.siblings('.heading').length > 0 ? opts.size.heading : 0),
+								'overflowX': 'hidden',
+								'overflowY': 'auto'
+							});
+						} else {
+							content.css({
+								'height': _frame.height() - contentBorder.height - (content.siblings('.heading').length > 0 ? opts.size.heading : 0),
+								'width': _frame.width() - contentBorder.width,
+								'overflowX': 'hidden',
+								'overflowY': 'auto'
+							});
+						}
+					});
+				});
 			};
 
 		/*
@@ -92,33 +123,18 @@
 				//标题
 				if (_options.title != '') {
 					_frame.append(heading);
-					//重绘
-					heading.css(headingStyle(heading));
 				}
 				//内容,异步载入
 				if (_options.url && _options.url.length > 0) {
 					content.load(_options.url);
 				}
 				_frame.append(content);
-				//重绘
-				content.css(contentStyle(content));
 				//活动状态
 				if (_options.active) {
 					_frame.addClass('active').addClass('opening');
 				}
 
-				//横向
-				if (opts.horizontal) {
-					_frame.css({
-						'height': self.height() - getSize(_frame).height,
-						'width': opts.size.body - getSize(_frame).width
-					});
-				} else {
-					_frame.css({
-						'width': self.width() - getSize(_frame).width,
-						'height': self.height() - getSize(_frame).height
-					});
-				}
+				refresh();
 
 				$this.open(_frame);
 			});
@@ -135,24 +151,34 @@
 				_height = (_this.height() - ((_frame.length - _frame.filter('.opening').length) * opts.size.heading)) / _frame.filter('.opening').length;
 
 			_frame.each(function(index) {
-				var __this = $(this);
+				var __this = $(this),
+					_border = getBorder(__this);
 
 				if (opts.horizontal) {
 					__this.stop().animate({
 						'left': _left
 					}, opts.speed);
 
-					_left += __this.hasClass('opening') ? __this.width() : _width;
+					_left += __this.hasClass('opening') ? __this.width() : _width > _frame.width() ? _frame.width() : _width;
 				} else {
 					__this.stop().animate({
-						'top': _top,
-						'height': _height - getSize(__this).height
+						'top': _top
 					}, opts.speed);
-					_top += __this.hasClass('opening') ? _height - getSize(__this).height : opts.size.heading;
+					_top += __this.hasClass('opening') ? _height - _border.height : opts.size.heading;
 				}
 			});
-		}
+		};
+		//
+		$(window).on('resize', function() {
+			// 刷新
+			$this.each(function() {
+				var self = $(this),
+					_frame = self.find('.frame.active').addClass('opening');
 
+				$this.open(_frame);
+			});
+		});
+		//
 		return $this.each(function() {
 			var self = $(this);
 
@@ -177,29 +203,19 @@
 					position: 'relative',
 					overflow: 'hidden'
 				});
-				//重绘
-				var _frame = self.find('.frame').css(frameStyle),
-					heading = _frame.find('.heading '),
-					content = _frame.find('.content ');
+
 				//横向
 				if (opts.horizontal) {
 					self.addClass('horizontal');
-					_frame.css({
-						'height': self.height() - getSize(_frame).height,
-						'width': opts.size.body - getSize(_frame).width
-					});
-				} else {
-					_frame.css({
-						'width': self.width() - getSize(_frame).width,
-						'height': self.height() - getSize(_frame).height
-					});
 				}
 
-				heading.css(headingStyle(heading));
-				content.css(contentStyle(content));
-
 				//自动打开
+				var _frame = self.find('.frame').css(frameStyle);
 				$this.open(_frame.filter(':nth-child(' + opts.autoopen + ')').addClass('opening').addClass('active'));
+
+				// 刷新
+				refresh();
+
 				//事件
 				self.on('click', '.frame', function(e) {
 					//
