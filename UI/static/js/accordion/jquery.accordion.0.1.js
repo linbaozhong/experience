@@ -16,7 +16,7 @@
 				horizontal: true, //横向或纵向排列
 				clickonly: true, //只允许click触发
 				autoopen: 0, //自动打开第几个
-				speed: 300 //动画速度
+				speed: 400 //动画速度
 			},
 			opts = $.extend(defaults, options),
 			frameStyle = {
