@@ -200,7 +200,7 @@
 
 		</div>
 		<div style="margin-top:100px;">
-			<button onclick="$('.lexus-container').popWindow({width: 1000,close:'<span>X</span>'});">弹出</button>
+			<button onclick="$('.lexus-container').popWindow({width: 1000,height:421,close:'<span>X</span>'});">弹出</button>
 		</div>
 	</body>
 
@@ -217,7 +217,7 @@
 	 * */
 	(function($) {
 		$.fn.popWindow = function(option) {
-			var self = this.eq(0).clone(),
+			var self = this.eq(0),
 				wd = $(window),
 				width = wd.width(),
 				height = wd.height() - 20,
@@ -249,7 +249,7 @@
 					right: 'auto',
 					bottom: 'auto'
 				});
-				if (self.height() > opts.height) {
+				if (self.outerHeight() > opts.height) {
 					closeBtn.css({
 						right: marginX + 25,
 						top: marginY + 5
@@ -264,6 +264,9 @@
 			// 最外层遮罩
 			if (!container.length) {
 				container = $('<div class="pop-container" style="position:fixed;top:0;right:0;bottom:0;left:0;background:#000000;opacity:0.6;z-index:90000;display:none;"></div>').appendTo($('body'));
+				container.click(function(){
+					closeBtn.click();
+				});
 			}
 			// 关闭按钮
 			if (!closeBtn.length) {
@@ -295,7 +298,7 @@
 				});
 			}
 			// 写入内容，并中心向外展开
-			model.empty().append(self.show()).show().animate({
+			model.empty().append(self.clone(true).show()).show().animate({
 				top: marginY,
 				bottom: marginY,
 				left: marginX,
