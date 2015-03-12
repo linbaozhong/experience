@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			.lexus-container {
+				width: 1002px;
+				height: 421px;
+				position: relative;
+				margin: 0 auto;
+				overflow: hidden;
+				border: 1px solid #ccc;
+			}
+			.lexus-container .lexus-background {
+				position: absolute;
+				width: 110%;
+				height: 110%;
+				top: 0;
+				left: 0;
+			}
+			.lexus-container .lexus-background ul {
+				margin: 0;
+				list-style: none;
+			}
+			.lexus-container .lexus-background ul li {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+				top: -5%;
+				left: -5%;
+			}
+			.lexus-container .lexus-background ul li img {
+				width: 100%;
+				height: 100%;
+			}
+			.lexus-container .lexus-front {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+		<script src="jquery-1.8.3.min.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				//
+				var _speed = 4000, //速度，毫秒
+					_container = $('.lexus-container'),
+					_li = $('.lexus-container .lexus-background ul li').hide(),
+					_bg = $('.lexus-container .lexus-background'),
+					_w = _container.width(),
+					_h = _container.height(),
+					_per = 0.04,
+					_w_p = _w * _per, //左右位移量
+					_h_p = _h * _per; //上下位移量
+				var _top = [-_h_p, 0, _h_p],
+					_left = [-_w_p, 0, _w_p],
+					_zoom = [100, 110, 120], //缩放比例
+					_method = [0, 1];
+				// 加载图片的蒙版
+				var _mark = $('<div class="lexus-front" style="line-height:' + _h + 'px;text-align:center;">正在加载界面</div>').appendTo(_container),
+					_imgs = [
+						"13tu/1.jpg",
+						"13tu/2.jpg",
+						"13tu/3.jpg",
+						"13tu/4.jpg",
+						"13tu/5.jpg",
+						"13tu/6.jpg",
+						"13tu/7.jpg",
+						"13tu/8.jpg",
+						"13tu/9.jpg",
+						"13tu/10.jpg",
+						"13tu/11.jpg",
+						"13tu/12.jpg",
+						"13tu/logo.png"
+					], //_container.find('img'),
+					_img_len = _imgs.length, //图片总数量
+					_img_count = 0; //已加载图片数量
+				$.each(_li, function(index) {
+					$(this).find('img').attr('src', _imgs[index]).load(function() {
+						_img_count += 1;
+					});
+				});
+				_container.find('.lexus-front img').attr('src', _imgs[_img_len - 1]).load(function() {
+					_img_count += 1;
+				});
+				// 嗅探加载进度
+				var _timer = setInterval(function() {
+					if (_img_len == _img_count) {
+						clearInterval(_timer);
+						// 移除蒙版
+						_mark.remove();
+						// 显示logo
+						_container.find('.lexus-front').show();
+						// 显示第一幅图
+						_li.eq(0).show();
+						// 开始轮播
+						showit(1);
+					}
+				}, 500);
+				// 随机取值,n=随机数的上限
+				function _rand(n) {
+					return Math.floor(Math.random() * (n + 1));
+				};
+				_top.get = function() {
+					return _top[_rand(2)];
+				};
+				_left.get = function() {
+					return _left[_rand(2)];
+				};
+				_zoom.get = function() {
+					return _zoom[_rand(2)] + '%';
+				};
+
+				function showit(index) {
+					var __top = _top.get(),
+						__left = _left.get(),
+						__zoom = _zoom.get();
+					if (_method[_rand(1)] == 0) {
+						// 位移
+						_bg.animate({
+							top: __top,
+							left: __left
+						}, _speed);
+					} else {
+						// 缩放
+						_li.animate({
+							width: __zoom,
+							height: __zoom
+						}, _speed);
+					}
+					// 淡入淡出
+					_li.eq(index).fadeTo(_speed, 0.9, function() {
+						if (index == 0) {
+							_li.eq(9).fadeOut(1000);
+						} else {
+							_li.eq(index - 1).fadeOut(1000);
+						}
+					});
+					_li.eq(index).fadeTo(_speed, 0.3, function() {
+						if (index == 9)
+							index = -1;
+						showit(index + 1);
+					});
+				}
+			});
+		</script>
+	</head>
+
+	<body>
+		<div></div>
+		<div class="lexus-container">
+			<div class="lexus-background">
+				<ul>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+					<li>
+						<img src="" />
+					</li>
+				</ul>
+			</div>
+			<div class="lexus-front" style="display:none;">
+				<img src="" />
+			</div>
+
+		</div>
+		<div style="margin-top:100px;">
+			<button onclick="$('.lexus-container').popWindow({width: 1000,close:'<span>X</span>'});">弹出</button>
+		</div>
+	</body>
+
+</html>
+<script type="text/javascript">
+	/*
+	jQuery弹窗插件 By 哈利蔺特 
+	 * 使用方法:
+	 * $('.lexus-container').popWindow({width: 1000,height: 400,close:'X'});
+	 * width:弹窗的宽度
+	 * height:弹窗的高度
+	 * close:关闭按钮中显示的内容
+	 * 
+	 * */
+	(function($) {
+		$.fn.popWindow = function(option) {
+			var self = this.eq(0).clone(),
+				wd = $(window),
+				width = wd.width(),
+				height = wd.height() - 20,
+				defaults = {
+					close: '关闭',
+					width: self.width(),
+					height: height,
+					speed: 600
+				},
+				opts = $.extend(true, defaults, option),
+				// 最外层遮罩
+				container = $('.pop-container'),
+				// 关闭按钮
+				closeBtn = $('.pop-close'),
+				// 窗口层
+				model = $('.pop-model'),
+				// 边距
+				marginX = (width - opts.width) / 2,
+				marginY = (height - opts.height) / 2;
+			// 窗口大小变化	
+			wd.resize(function() {
+				marginX = (wd.width() - opts.width) / 2;
+				marginY = (wd.height() - opts.height) / 2;
+				model.css({
+					height: opts.height,
+					width: opts.width,
+					left: marginX > 0 ? marginX : 0,
+					top: marginY > 0 ? marginY : 0,
+					right: 'auto',
+					bottom: 'auto'
+				});
+				if (self.height() > opts.height) {
+					closeBtn.css({
+						right: marginX + 25,
+						top: marginY + 5
+					});
+				} else {
+					closeBtn.css({
+						right: marginX + 5,
+						top: marginY + 5
+					});
+				}
+			});
+			// 最外层遮罩
+			if (!container.length) {
+				container = $('<div class="pop-container" style="position:fixed;top:0;right:0;bottom:0;left:0;background:#000000;opacity:0.6;z-index:90000;display:none;"></div>').appendTo($('body'));
+			}
+			// 关闭按钮
+			if (!closeBtn.length) {
+				closeBtn = $('<div class="pop-close" style="position:fixed;top:' + marginY + 'px;right:' + marginX + 'px;width:50px;height:50px;line-height:50px;text-align:center;background:#000000;color:#ffffff;z-index:99000;cursor:pointer;opacity:0.2;display:none;"></div>').appendTo($('body'));
+				closeBtn.html(opts.close).click(function() {
+					container.fadeOut();
+					closeBtn.fadeOut();
+					model.fadeOut();
+				}).hover(
+					function() {
+						$(this).css('opacity', 0.6);
+					},
+					function() {
+						$(this).css('opacity', 0.2);
+					}
+				);
+			}
+			// 弹窗
+			if (!model.length) {
+				model = $('<div class="pop-model" style="position:fixed;top:' + (height / 2) + 'px;right:' + (width / 2) + 'px;bottom:' + (height / 2) + 'px;left:' + (width / 2) + 'px;background:#ffffff;z-index:90001;overflow-x:hidden;overflow-y:auto;display:none;"></div>').appendTo($('body'));
+			} else if (model.is(':hidden')) {
+				model.css({
+					top: height / 2,
+					bottom: height / 2,
+					left: width / 2,
+					right: width / 2,
+					height: 'auto',
+					width: 'auto'
+				});
+			}
+			// 写入内容，并中心向外展开
+			model.empty().append(self.show()).show().animate({
+				top: marginY,
+				bottom: marginY,
+				left: marginX,
+				right: marginX
+			}, opts.speed, function() {
+				wd.resize();
+				closeBtn.fadeIn();
+			});
+			if (container.is(':hidden')) {
+				container.fadeIn(opts.speed);
+			}
+		};
+	})(jQuery);
+</script>

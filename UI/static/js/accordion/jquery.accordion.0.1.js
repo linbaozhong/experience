@@ -13,18 +13,20 @@
 					heading: 30, //标题宽度或高度,'auto'可选
 					body: 600 //单体宽度或者高度,'auto'可选
 				},
+				background: 'white',
 				horizontal: true, //横向或纵向排列
 				clickonly: true, //只允许click触发
-				autoopen: 0, //自动打开第几个
+				autoopen: 1, //自动打开第几个
 				speed: 400 //动画速度
 			},
 			opts = $.extend(defaults, options),
 			frameStyle = {
 				'position': 'absolute',
-				'left': 0,
+				'left': 5000,
 				'top': 0,
 				'cursor': 'pointer',
-				'overflow': 'hidden'
+				'overflow': 'hidden',
+				'background': opts.background
 			},
 			getBorder = function(_obj) {
 				return {
@@ -38,6 +40,7 @@
 					var self = $(this),
 						_frame = self.find('.frame'),
 						_border = getBorder(_frame);
+
 					// 渲染frame
 					if (opts.horizontal) {
 						// 横向
@@ -81,7 +84,7 @@
 						// 横向
 						if (opts.horizontal) {
 							content.css({
-								'width': _frame.width() - contentBorder.width,
+								'width': _frame.width() - contentBorder.width + (content.siblings('.heading').length > 0 ? 0 : opts.size.heading),
 								'height': _frame.height() - contentBorder.height,
 								'marginLeft': (content.siblings('.heading').length > 0 ? opts.size.heading : 0),
 								'overflowX': 'hidden',
@@ -115,29 +118,34 @@
 				active: false
 			}, options);
 
-			return $this.each(function(index) {
-				var self = $(this),
-					_frame = $('<div />').addClass('frame').css(frameStyle).appendTo(self),
-					heading = $('<div />').addClass('heading').css('lineHeight', opts.size.heading + 'px').html(_options.title),
-					content = $('<div />').addClass('content').html(_options.html);
-				//标题
-				if (_options.title != '') {
-					_frame.append(heading);
-				}
-				//内容,异步载入
-				if (_options.url && _options.url.length > 0) {
-					content.load(_options.url);
-				}
-				_frame.append(content);
-				//活动状态
-				if (_options.active) {
-					_frame.addClass('active').addClass('opening');
-				}
+			var _frame = $('<div />').addClass('frame').css(frameStyle).appendTo($this),
+				heading = $('<div />').addClass('heading').css('lineHeight', opts.size.heading + 'px').html(_options.title),
+				content = $('<div />').addClass('content').html(_options.html);
+			//标题
+			if (_options.title != '') {
+				_frame.append(heading);
+			}
+			//内容,异步载入
+			if (_options.url && _options.url.length > 0) {
+				content.load(_options.url);
+			}
+			_frame.append(content);
+			//活动状态
+			if (_options.active) {
+				_frame.addClass('active').addClass('opening');
+			}
 
-				refresh();
+			$this.open(_frame);
 
-				$this.open(_frame);
-			});
+			refresh();
+			return $this;
+
+		};
+		//
+		$this.active = function(i) {
+			var _frame = $this.find('.frame:nth-child(' + i + ')').addClass('active').addClass('opening');
+			$this.open(_frame);
+			return $this;
 		};
 		/*
 		 * 展开frame
@@ -175,7 +183,13 @@
 				var self = $(this),
 					_frame = self.find('.frame.active').addClass('opening');
 
+				self.css({
+					height: self.parent().height()
+				});
+
 				$this.open(_frame);
+				// 刷新
+				refresh();
 			});
 		});
 		//
@@ -187,21 +201,24 @@
 			 */
 			var _revert = function(_obj) {
 				if (_obj) {
-					self.find('.frame.active').removeClass('active');
-					_obj.addClass('active');
+					self.find('.frame.active').removeClass('active opening');
+					_obj.addClass('active opening').next().addClass('active opening');
 				} else {
 					_obj = self.find('.frame.active').addClass('opening');
-					$this.open(_obj);
 				}
+				$this.open(_obj);
+				$this.open(_obj.next());
 			};
 			/*
 			 * 初始化
 			 */
 			var _init = (function() {
+
 				//渲染
 				self.addClass('accordion').css({
 					position: 'relative',
-					overflow: 'hidden'
+					overflow: 'hidden',
+					height: '100%'
 				});
 
 				//横向
@@ -211,7 +228,7 @@
 
 				//自动打开
 				var _frame = self.find('.frame').css(frameStyle);
-				$this.open(_frame.filter(':nth-child(' + opts.autoopen + ')').addClass('opening').addClass('active'));
+				$this.open(_frame.filter(':nth-child(' + opts.autoopen + ')').addClass('active').addClass('opening'));
 
 				// 刷新
 				refresh();
@@ -220,20 +237,38 @@
 				self.on('click', '.frame', function(e) {
 					//
 					var _obj = $(this);
-					if (_obj.hasClass('active')) {
+					//当前活动的frame保持原状
+					if (_obj.hasClass('active') && _obj.next().hasClass('active')) {
 						return;
+					} else if (_obj.next().length == 0) {
+						//新建一个抽屉
+						$this.add({
+							html: 'it.htm',
+							active: true
+						});
 					};
 
 					_revert(_obj);
 				}).on('mouseenter', '.frame', function(e) {
+					var _that = $(this);
+					//当前活动的frame保持原状
+					if (_that.hasClass('active')) {
+						return;
+					}
 					self.find('.frame.opening').removeClass('opening');
-					$(this).addClass('opening');
-					$this.open($(this));
-				}).on('mouseleave', function(e) {
+					_that.addClass('opening');
+					$this.open(_that);
+				}).on('mouseleave', '.frame', function(e) {
+					var _that = $(this);
+					//当前活动的frame保持原状
+					if (_that.hasClass('active')) {
+						return;
+					}
 					self.find('.frame.opening').removeClass('opening');
 					_revert();
 				});
 			})();
+
 		});
 
 	};
