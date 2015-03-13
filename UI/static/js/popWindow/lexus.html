@@ -44,8 +44,7 @@
 				height: 100%;
 			}
 		</style>
-		<script src="/static/js/jquery-2.1.1.min.js"></script>
-		<!--<script src="jquery-2.1.1.min.js"></script>-->
+		<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 		<script type="text/javascript">
 			$(function() {
 				//
@@ -64,31 +63,18 @@
 					_method = [0, 1];
 				// 加载图片的蒙版
 				var _mark = $('<div class="lexus-front" style="line-height:' + _h + 'px;text-align:center;">正在加载界面</div>').appendTo(_container),
-					_imgs = [
-						"13tu/1.jpg",
-						"13tu/2.jpg",
-						"13tu/3.jpg",
-						"13tu/4.jpg",
-						"13tu/5.jpg",
-						"13tu/6.jpg",
-						"13tu/7.jpg",
-						"13tu/8.jpg",
-						"13tu/9.jpg",
-						"13tu/10.jpg",
-						"13tu/11.jpg",
-						"13tu/12.jpg",
-						"13tu/logo.png"
-					], //_container.find('img'),
+					_imgs = _container.find('img'),
 					_img_len = _imgs.length, //图片总数量
 					_img_count = 0; //已加载图片数量
-				$.each(_li, function(index) {
-					$(this).find('img').attr('src', _imgs[index]).load(function() {
+					
+				$.each(_imgs, function(index) {
+					var _img = $(this);
+					console.log(_img.data('rel'));
+					_img.attr('src', _img.data('rel')).load(function() {
 						_img_count += 1;
 					});
 				});
-				_container.find('.lexus-front img').attr('src', _imgs[_img_len - 1]).load(function() {
-					_img_count += 1;
-				});
+
 				// 嗅探加载进度
 				var _timer = setInterval(function() {
 					if (_img_len == _img_count) {
@@ -158,50 +144,50 @@
 			<div class="lexus-background">
 				<ul>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/1.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/2.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/3.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/4.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/5.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/6.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/7.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/8.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/9.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/10.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/11.jpg" src="" />
 					</li>
 					<li>
-						<img src="" />
+						<img data-rel="13tu/12.jpg" src="" />
 					</li>
 				</ul>
 			</div>
 			<div class="lexus-front" style="display:none;">
-				<img src="" />
+				<img data-rel="13tu/logo.png" src="" />
 			</div>
 
 		</div>
 		<div style="margin-top:100px;">
-			<button onclick="$('.lexus-container').popWindow({width: 1000,height:421,close:'<span>X</span>'});">弹出</button>
+			<button onclick="$('.lexus-container').popWindow({width: 1000,height:423,close:'<span>X</span>'});">弹出</button>
 		</div>
 	</body>
 
@@ -307,7 +293,7 @@
 			}
 			// 记录占位
 			var _tagName = self[0].tagName.toLowerCase();
-			self.before('<'+_tagName+' class="pop-self-position"></'+_tagName+'>')
+			self.before('<'+_tagName+' class="pop-self-position" style="display:none;"></'+_tagName+'>')
 			// 写入内容，并中心向外展开
 			model.empty().append(self.show()).show().animate({
 				top: marginY,
