@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+		<script src="modernizr.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			*{
+				box-sizing: border-box;
+			}
+			.snow-container{
+				position: relative;
+				width: 1002px;
+				height: 590px;
+				border: 1px solid #f00;
+				overflow: hidden;
+			}
+			.snow-wrap{
+				position: absolute;
+				width: 1002px;
+				height: 590px;
+				left: -107px;
+				transform: skew(-20deg);
+			}
+			.snow-item{
+				position:absolute;
+				top: 0;
+				width: 1002px;
+				height: 590px;
+				overflow: hidden;
+				border-left:3px solid #fff;
+				cursor: pointer;
+			}
+			.snow-item-bg{
+				position:absolute;
+				top: 0;
+				width: 1012px;
+				height: 590px;
+				transform: skew(20deg);
+			}
+		</style>
+		<script type="text/javascript">
+			(function($){
+				$.fn.snowAccordion = function(options){
+					var self = this,
+						opts = $.extend(true, {
+							deg:20, //倾斜度
+							spliter:3,//分割线宽度
+							marginLeft:-107,//倾斜后左移，隐藏斜角
+							activeWidth:800//激活图片的展示宽度
+						}, options);
+						
+					// 不支持倾斜的浏览器，不需要隐藏斜角
+					if(!Modernizr.csstransforms){
+						opts.marginLeft = 0;
+					}
+					
+					return $.each(self,function(){
+						var _this = $(this).css({left:opts.marginLeft}),
+							items = _this.find('.snow-item'),
+							space = (self.width() - opts.activeWidth) / (items.length-1);
+						//
+						//
+						items.children('.snow-item-bg').css({
+							left:opts.marginLeft,
+							transform:'skew('+opts.deg+'deg)'
+						});
+						
+						var refresh = function(index){
+							var _left = 0;
+							items.each(function(i){
+								var item = $(this),
+									_split = i==0?0:opts.spliter;// 第一栅格不需要分割线
+								
+								// 按等值间距排列
+								item.css({zIndex:i,borderLeftWidth:_split}).animate({left:_left});
+								//
+								if(i === index){
+									_left += opts.activeWidth;
+								}else{
+									_left += space;
+								}
+							});							
+						};
+						
+						items.click(function(){
+							console.log($(this).index());
+							refresh($(this).index());
+						});
+						refresh(0);
+					});
+				};
+			})(jQuery);
+			
+			$(function(){
+				$('.snow-wrap').snowAccordion();
+			});
+		</script>
+	</head>
+	<body>
+		<div class="snow-container">
+			<div class="snow-wrap">
+				<div class="snow-item" style="z-index: 0;">
+					<img class="snow-item-bg" src="1.jpg"/>
+				</div>
+				<div class="snow-item" style="z-index: 1;">
+					<img class="snow-item-bg" src="2.jpg"/>
+				</div>
+				<div class="snow-item" style="z-index: 2;">
+					<img class="snow-item-bg" src="3.jpg"/>
+				</div>
+				<div class="snow-item" style="z-index: 3;">
+					<img class="snow-item-bg" src="4.jpg"/>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

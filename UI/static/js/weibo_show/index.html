@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+		<style type="text/css">
+			#weibo_show .status{
+				position:relative;
+			}
+			#weibo_show .status .status_avatar{
+				float: left;
+				text-align: center;
+				width:90px;
+			}
+			#weibo_show .status .status_text{
+				margin-left:90px
+			}
+			#weibo_show .status:after{
+				clear: both;
+				content: '';
+			}
+		</style>
+		<script type="text/javascript">
+			$(function() {
+				var _template=['<div class="status">'];
+				_template.push('<div class="status_avatar"><a href="http://weibo.com/<%.profile_url%>"><img src="<%.profile_image_url%>" /><br /><span><%.screen_name%></span></a></div>');
+				_template.push('<div class="status_text"><%.text%><br /><img src="<%.thumbnail_pic%>" /></div>');
+				_template.push('</div>');
+				var _weibo = $('#weibo_show'),_temp = _template.join('');
+					
+				var _url = 'https://api.weibo.com/2/statuses/user_timeline.json?access_token=2.00HgU9zCL_HH6D1e99775307z3zwQC&count=10';
+				$.ajax({
+					type: "get",
+					url: _url,
+					async: true,
+					dataType :"jsonp",
+					success: function(data,status) {
+						if(status == 'success'){
+							var statuses = data.data.statuses;
+							
+							$.each(statuses, function() {    
+								var _wb = _temp.replace(/<%.text%>/g,this.text)
+									.replace(/<%.thumbnail_pic%>/g,this.thumbnail_pic)
+									.replace(/<%.profile_url%>/g,this.user.profile_url)
+									.replace(/<%.profile_image_url%>/g,this.user.profile_image_url)
+									.replace(/<%.screen_name%>/g,this.user.screen_name)
+									;
+								console.log(_wb);
+								_weibo.append(_wb);
+							});
+						}
+					}
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="weibo_show"></div>
+	</body>
+
+</html>

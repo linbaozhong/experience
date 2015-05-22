@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+		<script src="../jQuery/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			(function($) {
+				$.fn.slidingWindow = function(options) {
+					var self = this,
+						defaults = {
+							helperWidth: 25,
+							helperLeft: 100,
+							helperRight: 100,
+							leftContent: null,
+							rightContent: null
+						},
+						opts = $.extend(true, defaults, options);
+					return $.each(self, function() {
+						var _this = $(this).css({
+								position: 'relative'
+							}),
+							width = _this.width(),
+							height = _this.height(),
+							_left = _this.children('.sliding-left:eq(0)'),
+							_right = _this.children('.sliding-right:eq(0)'),
+							helper = _this.children('.sliding-helper:eq(0)');
+						// 初始化样式
+						helper.css({
+							width: opts.helperWidth,
+							height: height,
+							position: 'absolute',
+							marginLeft: opts.helperLeft,
+							marginRight: opts.helperRight,
+							cursor: 'move'
+						}).draggable({
+							axis: "x",
+							helper: 'original',
+							containment: "parent",
+							drag: function(e, ui) {
+								_left.css('width', ui.position.left + opts.helperLeft + (opts.helperWidth / 2));
+								_right.css('width', width - _left.width());
+								// 显示内容
+								if(opts.leftContent && opts.rightContent){
+									if (_left.width() > _right.width()) {
+										$(opts.leftContent).show();
+										$(opts.rightContent).hide();
+									} else{
+										$(opts.leftContent).hide();
+										$(opts.rightContent).show();
+									}
+								}
+							}
+						});
+						_left.css({
+							width: opts.helperLeft + (opts.helperWidth / 2),
+							height: height,
+							position: 'absolute',
+							left: 0
+						});
+						_right.css({
+							width: width - _left.width(),
+							height: height,
+							position: 'absolute',
+							right: 0
+						});
+					});
+				};
+			})(jQuery);
+			
+			$(function() {
+				$('#sliding').slidingWindow({
+					leftContent:'.content_left',
+					rightContent:'.content_right'
+				});
+			});
+		</script>
+		<style type="text/css">
+			#sliding {
+				width: 1000px;
+				height: 500px;
+				margin: 0 auto;
+			}
+			#sliding .sliding-left {
+				background: url(left.jpg) left top;
+				overflow: hidden;
+			}
+			#sliding .sliding-right {
+				background: url(right.jpg) right top;
+				overflow: hidden;
+			}
+			#sliding .sliding-helper {
+				background: url(center.png);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="sliding">
+			<div class="sliding-left">
+				<button style="position:absolute;left:50px;top:100px;width:200px;">左侧按钮左侧按钮左侧按钮左侧按钮</button>
+			</div>
+			<div class="sliding-right">
+				<button style="position:absolute;right:50px;top:100px;width:200px;">右侧按钮右侧按钮右侧按钮右侧按钮</button>
+			</div>
+			<div class="sliding-helper">
+
+			</div>
+		</div>
+		<div>
+			<div class="content_left" style="display:none;font-size:200px;">
+				左侧
+			</div>
+			<div class="content_right" style="font-size:200px;">
+				右侧
+			</div>
+		</div>
+	</body>
+
+</html>
