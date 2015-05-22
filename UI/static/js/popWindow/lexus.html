@@ -197,9 +197,11 @@
 
 </html>
 <script type="text/javascript">
+
 function pop(){
 	$('.lexus-container').popWindow({width: 1000,height:423,close:'<span>X</span>'});
 }
+
 /*
 jQuery弹窗插件 By 哈利蔺特 
  * 使用方法:
@@ -280,12 +282,12 @@ jQuery弹窗插件 By 哈利蔺特
 		// 记录占位
 		var _tagName = self[0].tagName.toLowerCase();
 		self.before('<' + _tagName + ' class="pop-self-position" style="display:none;"></' + _tagName + '>')
-		// 写入内容，并中心向外展开
+			// 写入内容，并中心向外展开
 		model.show().animate({
 			height: opts.height,
 			width: opts.width
 		}, opts.speed).children('.pop-body').empty().append(self.show());
-		
+
 		if (container.is(':hidden')) {
 			container.fadeIn(opts.speed);
 		}
@@ -298,3 +300,4 @@ jQuery弹窗插件 By 哈利蔺特
 })(jQuery);
 
 </script>
+
