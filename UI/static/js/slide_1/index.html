@@ -12,22 +12,22 @@
 			.snow-container{
 				position: relative;
 				width: 1002px;
-				height: 590px;
-				border: 1px solid #f00;
+				height: 375px;
+				border: 1px solid #eee;
 				overflow: hidden;
 			}
 			.snow-wrap{
 				position: absolute;
 				width: 1002px;
-				height: 590px;
-				left: -107px;
-				transform: skew(-20deg);
+				height: 375px;
+				left: -68px;
+				transform: skew(-17.5deg);
 			}
 			.snow-item{
 				position:absolute;
 				top: 0;
 				width: 1002px;
-				height: 590px;
+				height: 375px;
 				overflow: hidden;
 				border-left:3px solid #fff;
 				cursor: pointer;
@@ -35,9 +35,30 @@
 			.snow-item-bg{
 				position:absolute;
 				top: 0;
-				width: 1012px;
-				height: 590px;
-				transform: skew(20deg);
+				left: -59px;
+				height: 375px;
+				transform: skew(17.5deg);
+			}
+			.snow-item-title,.snow-item-body{
+				position:absolute;
+				display: block;
+				transform: skew(17.5deg);
+			}
+			.snow-item .nav{
+				position:absolute;
+				top:148px;
+				padding:20px;
+				font-size: 40px;
+				color: #fff;
+				display: none;				
+			}
+			.snow-item .left{
+				display: block;
+				float:left;
+			}
+			.snow-item .right{
+				display: block;
+				float:right;
 			}
 		</style>
 		<script type="text/javascript">
@@ -45,25 +66,28 @@
 				$.fn.snowAccordion = function(options){
 					var self = this,
 						opts = $.extend(true, {
-							deg:20, //倾斜度
-							spliter:3,//分割线宽度
-							marginLeft:-107,//倾斜后左移，隐藏斜角
-							activeWidth:800//激活图片的展示宽度
+							deg:17.5, //倾斜度
+							spliter:1,//分割线宽度
+							marginLeft:-59,//倾斜后左移，隐藏斜角
+							activeWidth:543//激活图片的展示宽度
 						}, options);
 						
-					// 不支持倾斜的浏览器，不需要隐藏斜角
-					if(!Modernizr.csstransforms){
-						opts.marginLeft = 0;
-					}
 					
 					return $.each(self,function(){
-						var _this = $(this).css({left:opts.marginLeft}),
+						var _this = $(this),
 							items = _this.find('.snow-item'),
-							space = (self.width() - opts.activeWidth) / (items.length-1);
-						//
+							space = 168;
+						// 不支持倾斜的浏览器，不需要隐藏斜角
+						if(!Modernizr.csstransforms){
+							//opts.marginLeft = 0;
+							var _item = _this.find('.snow-item:eq(0)');
+							_item.find('.snow-item-title').css({left:190});
+							_item.find('.snow-item-body').css({left:90});
+							_this.find('.nav').css({width:500})
+							_item.find('.nav').css({width:542})
+						}
 						//
 						items.children('.snow-item-bg').css({
-							left:opts.marginLeft,
 							transform:'skew('+opts.deg+'deg)'
 						});
 						
@@ -71,21 +95,47 @@
 							var _left = 0;
 							items.each(function(i){
 								var item = $(this),
-									_split = i==0?0:opts.spliter;// 第一栅格不需要分割线
+									_split = i==0 ? 0 : opts.spliter;// 第一栅格不需要分割线
 								
+								if(index>0 && i==0){
+									_left = -100;
+								}
 								// 按等值间距排列
-								item.css({zIndex:i,borderLeftWidth:_split}).animate({left:_left});
-								//
+								item.css({
+									zIndex:i,
+									borderLeftWidth:_split
+								}).animate({
+									left:_left
+								},function(){
+									if(i == index){
+										item.find('.snow-item-title').fadeOut();
+										item.find('.nav').fadeIn();
+										item.find('.snow-item-body').fadeIn();
+									}else{
+										item.find('.snow-item-body').fadeOut();
+										item.find('.snow-item-title').fadeIn();
+										item.find('.nav').fadeOut();
+									}
+								});
+								//.children('.snow-item-title').text(i==index ? '' : opts.title[i])
+								
 								if(i === index){
-									_left += opts.activeWidth;
+									if(i == 0){
+										_left = 583;
+									}else{
+										_left += opts.activeWidth;
+									}
 								}else{
-									_left += space;
+									if(i == 0 && index > 0){
+										_left = 228;
+									}else{
+										_left += space;
+									}
 								}
 							});							
 						};
 						
 						items.click(function(){
-							console.log($(this).index());
 							refresh($(this).index());
 						});
 						refresh(0);
@@ -102,16 +152,38 @@
 		<div class="snow-container">
 			<div class="snow-wrap">
 				<div class="snow-item" style="z-index: 0;">
-					<img class="snow-item-bg" src="1.jpg"/>
+					<img class="snow-item-bg" src="bg1.jpg" style="left: 68px;"/>
+					<img class="snow-item-title" style="top:30px;left:140px;display: none;" src="title1.png">
+					<img class="snow-item-body" style="top:43px;left:52px;" src="text1.png">
+					<div class="nav" style="width: 580px;">
+						<img class="right" src="right.png">
+					</div>
 				</div>
 				<div class="snow-item" style="z-index: 1;">
-					<img class="snow-item-bg" src="2.jpg"/>
+					<img class="snow-item-bg" src="bg2.jpg"/>
+					<img class="snow-item-title" style="top:30px;left:30px;" src="title2.png">
+					<img class="snow-item-body" style="top:300px;left:35px;display: none;" src="text2.png">
+					<div class="nav" style="width: 538px;">
+						<img class="left" src="left.png">
+						<img class="right" src="right.png">
+					</div>
 				</div>
 				<div class="snow-item" style="z-index: 2;">
-					<img class="snow-item-bg" src="3.jpg"/>
+					<img class="snow-item-bg" src="bg3.jpg"/>
+					<img class="snow-item-title" style="top:30px;left:30px;" src="title3.png">
+					<img class="snow-item-body" style="top:283px;left:82px;display: none;" src="text3.png">
+					<div class="nav" style="width: 538px;">
+						<img class="left" src="left.png">
+						<img class="right" src="right.png">
+					</div>
 				</div>
 				<div class="snow-item" style="z-index: 3;">
-					<img class="snow-item-bg" src="4.jpg"/>
+					<img class="snow-item-bg" src="bg4.jpg"/>
+					<img class="snow-item-title" style="top:30px;left:30px;" src="title4.png">
+					<img class="snow-item-body" style="top:310px;left:28px;display: none;" src="text4.png">
+					<div class="nav" style="width: 538px;">
+						<img class="left" src="left.png">
+					</div>
 				</div>
 			</div>
 		</div>
